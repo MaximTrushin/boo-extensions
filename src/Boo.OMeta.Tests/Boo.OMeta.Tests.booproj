@@ -65,8 +65,5 @@
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Reference Include="nunit.framework" />
-    <Reference Include="Boo.Lang, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <Reference Include="Boo.Lang.Useful, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <Reference Include="Boo.Lang.PatternMatching, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
   </ItemGroup>
 </Project>
