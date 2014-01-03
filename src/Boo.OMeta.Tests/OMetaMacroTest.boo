@@ -241,7 +241,35 @@ class OMetaMacroTest:
 			case SuccessfulMatch(Value: "ff"):
 				pass
 
-
+	[Test]
+	def TestExplodeInput():
+		
+		ometa ExplodeInput:
+			match = *john_or_paul
+			match2 = ~~*john_or_paul, _
+			john = "John "
+			paul = "Paul "
+			john_or_paul = john | paul
+			
+		def john_or_paul(person): 
+			return ExplodeInput().match(OMetaInput.Singleton(person))
+		
+		def john_or_paul2(person): 
+			return ExplodeInput().match2(OMetaInput.Singleton(person))
+		
+		o = john_or_paul("John Stewart")
+		
+		match o:
+			case SuccessfulMatch(Input, Value):
+				assert Input.IsEmpty
+				assert Value == "John "
+				
+		o = john_or_paul2("John Stewart")
+		
+		match o:
+			case SuccessfulMatch(Input, Value):
+				assert Input.IsEmpty
+				assert Value == "John Stewart"
 	def assertE(grammar as OMetaGrammar):
 		assertRule grammar, 'exp', "11+31", [['1', '1'], '+', ['3', '1']]
 		assertRule grammar, 'exp', "1+2*3", [['1'], '+', [['2'], '*', ['3']]]
