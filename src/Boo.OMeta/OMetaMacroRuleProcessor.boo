@@ -282,19 +282,31 @@ class OMetaMacroRuleProcessor:
 				block.Add([| $lastMatch = SuperApply(context, $_ruleName, $input) |])
 				
 			case [| $_() |]:
+				initialInput = uniqueName()
+				patternString = e.ToCodeString()
 				rules = processObjectPatternRules(e)
 				condition = Boo.Lang.PatternMatching.Impl.PatternExpander().Expand([| smatch.Value |], e)
 				code = [|
 					block:
+						$initialInput = $input
 						$lastMatch = any($input)
 						smatch = $lastMatch as SuccessfulMatch
 						if smatch is not null:
 							if $condition:
 								$(expandObjectPatternRules(rules, lastMatch))
 							else:
-								$lastMatch = FailedMatch($input, ObjectPatternFailure($(e.ToCodeString())))
+								$lastMatch = FailedMatch($input, ObjectPatternFailure($patternString))
+								
+							smatch = $lastMatch as SuccessfulMatch
+							if smatch is not null:
+								//Move input to the next position if success
+								//Return object itself
+								$lastMatch = SuccessfulMatch($initialInput.Tail, $initialInput.Head)  
+							else:
+								$lastMatch = FailedMatch($initialInput, ($lastMatch as FailedMatch).Failure) //Restore input if rule failed
+
 				|].Body
-				block.Add(code) 
+				block.Add(code)
 				
 			case ArrayLiteralExpression(Items: items):
 				expandSequence block, items, input, lastMatch 

@@ -71,9 +71,9 @@ class ObjectMatchingTest:
 				
 		match john_or_paul(Person("Eric")):
 			case FailedMatch(Input):
-				assert Input.Head == "Eric"
+				assert Input.Head == Person("Eric")
 				
 		match john_or_paul(Person(42)):
 			case FailedMatch(Input, Failure: ObjectPatternFailure(Pattern)):
-				assert Input.Head == 42
+				assert Input.Head == Person(42)
 				assert Pattern == "'42' is not a string"
