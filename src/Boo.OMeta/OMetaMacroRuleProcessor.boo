@@ -342,10 +342,10 @@ class OMetaMacroRuleProcessor:
 	def processObjectPatternRules(rules as List, pattern as MethodInvocationExpression):
 		for arg in pattern.NamedArguments:
 			match arg.Second:
-				case [| $_ >> $_ |]:
+				case MemberReferenceExpression():
+					pass
+				otherwise:
 					temp = uniqueName()
 					rules.Add((temp, arg.Second))
-					arg.Second = temp
-				otherwise:
-					pass
+					arg.Second = temp	
 			

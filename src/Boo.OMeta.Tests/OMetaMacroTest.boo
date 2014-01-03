@@ -270,6 +270,7 @@ class OMetaMacroTest:
 			case SuccessfulMatch(Input, Value):
 				assert Input.IsEmpty
 				assert Value == "John Stewart"
+
 	def assertE(grammar as OMetaGrammar):
 		assertRule grammar, 'exp', "11+31", [['1', '1'], '+', ['3', '1']]
 		assertRule grammar, 'exp', "1+2*3", [['1'], '+', [['2'], '*', ['3']]]
