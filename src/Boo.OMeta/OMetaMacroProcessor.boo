@@ -25,8 +25,11 @@ class OMetaMacroProcessor:
 					
 				case [| $(ReferenceExpression(Name: name))[$_] = $pattern |]:
 					pass
-			
-			block.Add([| InstallRule($name, $(ReferenceExpression(Name: "${name}_rule"))) |])
+			if name.StartsWith("__"):
+				name = name.Substring(2)
+				block.Add([| InstallRule($name, OMetaRule(false, $(ReferenceExpression(Name: "${name}_rule")))) |])
+			else:
+				block.Add([| InstallRule($name, OMetaRule(true, $(ReferenceExpression(Name: "${name}_rule")))) |])
 		return block
 		
 	def introduceRuleMethods(type as TypeDefinition):
@@ -36,6 +39,8 @@ class OMetaMacroProcessor:
 					type.Members.Add(tm)
 					
 				case ExpressionStatement(Expression: [| $(ReferenceExpression(Name: name)) = $pattern |]):
+					if name.StartsWith("__"):
+						name = name.Substring(2)
 					m0 = [|
 						private def $("${name}_rule")(context as OMetaEvaluationContext, input_ as OMetaInput) as OMetaMatch:
 							$(OMetaMacroRuleProcessor(name, options, ruleNames).expand(pattern))
@@ -53,6 +58,8 @@ class OMetaMacroProcessor:
 					type.Members.Add(m2)
 					
 				case ExpressionStatement(Expression: [| $(ReferenceExpression(Name: name))[$arg] = $pattern |]):
+					if name.StartsWith("__"):
+						name = name.Substring(2)					
 					m0 = [|
 						private def $("${name}_rule")(context as OMetaEvaluationContext, input_ as OMetaInput) as OMetaMatch:
 							$(OMetaMacroRuleProcessor(name, options, ruleNames).expand(pattern, arg))

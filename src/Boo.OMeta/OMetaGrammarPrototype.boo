@@ -3,15 +3,15 @@ namespace Boo.OMeta
 class OMetaGrammarPrototype(OMetaGrammarBase):
 	
 	def constructor():
-		SetUpRule "whitespace", "char.IsWhitespace", char.IsWhiteSpace
-		SetUpRule "letter", "char.IsLetter", char.IsLetter
-		SetUpRule "digit", "char.IsDigit", char.IsDigit
-		InstallRule "_", any_rule
+		SetUpRule "whitespace", "char.IsWhitespace", char.IsWhiteSpace, false
+		SetUpRule "letter", "char.IsLetter", char.IsLetter, false
+		SetUpRule "digit", "char.IsDigit", char.IsDigit, false
+		InstallRule "_", OMetaRule(false, any_rule)
 		
-	private def SetUpRule(name as string, predicateDescription as string, predicate as System.Predicate[of object]):
-		InstallRule(name, makeRule(name, predicateDescription, predicate))
+	private def SetUpRule(name as string, predicateDescription as string, predicate as System.Predicate[of object], memoize as bool):
+		InstallRule(name, OMetaRule(memoize, makeRule(name, predicateDescription, predicate)))
 		
-	def makeRule(ruleName as string, predicateDescription as string, predicate as System.Predicate[of object]) as OMetaRule:
+	def makeRule(ruleName as string, predicateDescription as string, predicate as System.Predicate[of object]) as OMetaRuleCallable:
 		predicateFailure = PredicateFailure(predicateDescription)
 		def rule(context as OMetaEvaluationContext, input as OMetaInput) as OMetaMatch:
 			if input.IsEmpty:

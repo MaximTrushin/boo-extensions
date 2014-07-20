@@ -43,28 +43,35 @@ for indirectly/mutually left recursive rules.
 	def constructor([required] grammar as OMetaGrammar):
 		_grammar = grammar
 		
-	def Eval(rule as string, input as OMetaInput) as OMetaMatch:	
-		memoKey = MemoKey(rule, input)
-		m = Recall(memoKey)
-		if m is null:
-			lr = LeftRecursion(Fail(input), rule, null)
-			_lrStack.Push(lr)
-			_memo[memoKey] = lr
-			ans = Apply(rule, input)
-			_lrStack.Pop()
-			if lr.head is not null:
-				lr.seed = ans
-				return LRAnswer(memoKey, lr)
+	def Eval(ruleName as string, input as OMetaInput) as OMetaMatch:
+		rule = _grammar.GetRule(ruleName)
+		memoKey = MemoKey(ruleName, input)
+		if rule.Memoize:
+			
+			m = Recall(memoKey)
+			if m is null:
+				lr = LeftRecursion(Fail(input), ruleName, null)
+				_lrStack.Push(lr)
+				_memo[memoKey] = lr
+				ans = Apply(ruleName, input)
+				_lrStack.Pop()
+				if lr.head is not null:
+					lr.seed = ans
+					return LRAnswer(memoKey, lr)
+				else:
+					_memo[memoKey] = ans
+					return ans
 			else:
-				_memo[memoKey] = ans
-				return ans
+				lr = m as LeftRecursion
+				if lr is not null:
+					SetupLR(ruleName, lr)
+					return lr.seed
+				else:
+					return m
 		else:
-			lr = m as LeftRecursion
-			if lr is not null:
-				SetupLR(rule, lr)
-				return lr.seed
-			else:
-				return m
+			//No memoization, no left recursion, just return result
+			return Apply(ruleName, input)
+			
 				
 	private def Apply(rule as string, input as OMetaInput):
 		return _grammar.Apply(self, rule, input)
