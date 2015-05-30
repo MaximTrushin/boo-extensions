@@ -242,6 +242,17 @@ class OMetaMacroTest:
 				pass
 
 	[Test]
+	def TestAny():
+		ometa AnyParser:
+			parse = ++_
+		
+		
+		m = AnyParser().parse("0xff")
+		match m:
+			case SuccessfulMatch():
+				pass
+
+	[Test]
 	def TestExplodeInput():
 		
 		ometa ExplodeInput:
