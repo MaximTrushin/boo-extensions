@@ -20,8 +20,8 @@ it generates:
 	eq = "=" >> value ^ makeToken("eq", value)
 	id = ++letters >> value ^ makeToken("id", value)
 	tokens = eq | id
-	EQ = token["eq"]
-	ID = token["id"]
+	EQ = (scanner >> t and tokenMatches(t, "eq")) ^ t
+	ID = (scanner >> t and tokenMatches(t, "id")) ^ t
 """
 	block as Block = tokens.ParentNode
 
@@ -33,7 +33,7 @@ it generates:
 				e.LexicalInfo = stmt.LexicalInfo
 				block.Add(e)
 				
-				tokenRule = [| $(ReferenceExpression(Name: name.ToString().ToUpper())) = token[$(name.ToString())] |]
+				tokenRule = [| $(ReferenceExpression(Name: name.ToString().ToUpper())) = (scanner >> t and tokenMatches(t, $(name.ToString()))) ^ t |]
 				e.LexicalInfo = stmt.LexicalInfo
 				block.Add(tokenRule)
 				rules.Add(name)

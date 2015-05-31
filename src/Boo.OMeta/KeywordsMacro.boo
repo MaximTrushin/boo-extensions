@@ -16,8 +16,8 @@ From:
 it generates:
 
 	keywords = FOO | BAR
-	FOO = keyword["foo"]
-	BAR = keyword["bar"]
+	FOO = ((KW >> t) and ("foo" is tokenValue(t))) ^ t
+	BAR = ((KW >> t) and ("bar" is tokenValue(t))) ^ t
 """
 
 	block as Block = keywords.ParentNode
@@ -27,7 +27,7 @@ it generates:
 		match keyword:
 			case StringLiteralExpression(Value: name):
 				keywordRule = ReferenceExpression(Name: name.ToUpper())
-				block.Add([| $keywordRule = keyword[$keyword] |])
+				block.Add([| $keywordRule = ((KW >> t) and ($keyword is tokenValue(t))) ^ t |])
 				rules.Add(keyword)
 		
 	block.Add([| keywords = $(choicesRuleFrom(rules)) |])

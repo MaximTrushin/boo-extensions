@@ -47,7 +47,6 @@ ometa WhitespaceSensitiveTokenizer():
 	spaces = --space >> value ^ value
 	space = ' ' | '\t' | (newline and inWSA(input))
 	newline = '\n' | "\r\n" | "\r"
-	token[expected] = (scanner >> t and tokenMatches(t, expected)) ^ t
 	
 	wsa = ~~_ and inWSA(input)
 	
@@ -57,9 +56,9 @@ ometa WhitespaceSensitiveTokenizer():
 	
 	leaveWhitespaceAgnosticRegion = $(leaveWSA(input))
 	
-	INDENT = token["indent"]
-	DEDENT = token["dedent"] | ~_
-	EOL = token["eol"]
+	INDENT = (scanner >> t and tokenMatches(t, "indent")) ^ t
+	DEDENT = ((scanner >> t and tokenMatches(t, "dedent")) ^ t) | ~_
+	EOL = (scanner >> t and tokenMatches(t, "eol")) ^ t
 	
 	def inWSA(input as OMetaInput):
 		return wsaLevel(input) > 0
